@@ -2,6 +2,8 @@ package Basic;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Test003EvenChecker implements Runnable {
 	private IntGenerator generator;
@@ -51,6 +53,25 @@ class EvenGenerator extends IntGenerator {
 		}
 		synchronized(this) {
 			return currentEvenValue;
+		}
+	}
+	
+}
+
+class MutexEvenGenerator extends IntGenerator {
+	private int currentEvenValue = 0;
+	Lock lock = new ReentrantLock();
+	
+	@Override
+	public int next() {
+		try {
+			lock.lock();
+			++currentEvenValue;
+			++currentEvenValue;
+			return currentEvenValue;
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 	
